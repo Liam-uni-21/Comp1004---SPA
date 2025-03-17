@@ -14,6 +14,8 @@
     border-radius: 20px;
 }
 .flashcard {
+    width: 300px;
+    height: 200px;
     position: relative; /* Ensure it contains front and back */
     transform-style: preserve-3d;
     transition: all 0.5s ease-in-out;
@@ -27,6 +29,7 @@
     height: 100%;
     width: 100%;
     border-radius: 10px;
+    background-image: url(img/flashcard-image.jpg);
 }
 
 .flashcard .front {
@@ -42,7 +45,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: lightgray;
 }
 
 .flashcard.flipped {
