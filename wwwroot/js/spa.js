@@ -1,6 +1,6 @@
 ﻿$(document).ready(function () {
     $('#quiz').click(function () {
-        $('#page-content-wrapper').load('quiz.html');
+        $('#page-content-wrapper').load('quizhome.html');
     })
 });
 $(document).ready(function () {
@@ -18,105 +18,86 @@ $(document).ready(function () {
         $('#page-content-wrapper').load('home.html');
     })
 });
+$(document).ready(function () {
+    $('#option-Q1').click(function () {
+        $('#page-content-wrapper').load('quiz.html');
+    })
+});
 
 function displayAnswer1(element) {
-    if (element == document.getElementById("option-11")) {
-        if (quizData.Answered[page] == false) {
-            quizData.AnsweredA[page] = "A1";
-            if (quizData.A1[page] == true) {
-                document.getElementById("option-11").style.border = "3px solid limegreen";
-                document.getElementById("option-11").style.backgroundColor = "limegreen";
-                document.getElementById("result-11").innerHTML = "Correct!!";
-            } else {
-                document.getElementById("option-11").style.border = "3px solid red";
-                document.getElementById("option-11").style.backgroundColor = "red";
-                document.getElementById("result-11").innerHTML = "Incorrect!!";
-            }
-            quizData.Answered[page] = true;
-        } 
-    }
-    if (element == document.getElementById("option-12")) {
-        if (quizData.Answered[page] == false) { 
-            quizData.AnsweredA[page] = "A2";
-            if (quizData.A2[page] == true) {
-                document.getElementById("option-12").style.border = "3px solid limegreen";
-                document.getElementById("option-12").style.backgroundColor = "limegreen";
-                document.getElementById("result-12").innerHTML = "Correct!!";
-            } else {
-                document.getElementById("option-12").style.border = "3px solid red";
-                document.getElementById("option-12").style.backgroundColor = "red";
-                document.getElementById("result-12").innerHTML = "Incorrect!!";
-            }
-            quizData.Answered[page] = true;
-        }
-    }
-    if (element == document.getElementById("option-13")) {
-        if (quizData.Answered[page] == false) {
-            quizData.AnsweredA[page] = "A3";
-            if (quizData.A3[page] == true) {
-                document.getElementById("option-13").style.border = "3px solid limegreen";
-                document.getElementById("option-13").style.backgroundColor = "limegreen";
-                document.getElementById("result-13").innerHTML = "Correct!!";
-            } else {
-                document.getElementById("option-13").style.border = "3px solid red";
-                document.getElementById("option-13").style.backgroundColor = "red";
-                document.getElementById("result-13").innerHTML = "Incorrect!!";
-            }
-            quizData.Answered[page] = true;
-        }
-    }
-    if (element == document.getElementById("option-14")) {
-        if (quizData.Answered[page] == false) { 
-            quizData.AnsweredA[page] = "A4";
-            if (quizData.A4[page] == true) {
-                document.getElementById("option-14").style.border = "3px solid limegreen";
-                document.getElementById("option-14").style.backgroundColor = "limegreen";
-                document.getElementById("result-14").innerHTML = "Correct!!";
-            } else {
-                document.getElementById("option-14").style.border = "3px solid red";
-                document.getElementById("option-14").style.backgroundColor = "red";
-                document.getElementById("result-14").innerHTML = "Incorrect!!";
-            }
-            quizData.Answered[page] = true;
-        }
+    let selectedQuiz = localStorage.getItem("selectedQuiz");
+    let progressKey = `quizProgress_${selectedQuiz}`; // Unique key for each quiz
+
+    let selectedOption = "";
+    if (element == document.getElementById("option-11")) selectedOption = "A1";
+    if (element == document.getElementById("option-12")) selectedOption = "A2";
+    if (element == document.getElementById("option-13")) selectedOption = "A3";
+    if (element == document.getElementById("option-14")) selectedOption = "A4";
+
+    if (!quizData.Answered[page]) {
+        quizData.AnsweredA[page] = selectedOption;
+        quizData.Answered[page] = true;
+
+        // Save progress with unique key
+        localStorage.setItem(progressKey, JSON.stringify(quizData));
+
+        let correctAnswerKey = selectedQuiz + selectedOption;
+        let isCorrect = quizData[correctAnswerKey][page];
+
+        let optionId = `option-1${selectedOption.charAt(1)}`;
+        document.getElementById(optionId).style.border = isCorrect ? "3px solid limegreen" : "3px solid red";
+        document.getElementById(optionId).style.backgroundColor = isCorrect ? "limegreen" : "red";
+        document.getElementById(`result-1${selectedOption.charAt(1)}`).innerHTML = isCorrect ? "Correct!!" : "Incorrect!!";
     }
 }
 
 function updateQuestion() {
+    let selectedQuiz = localStorage.getItem("selectedQuiz");
+    let questionSet = selectedQuiz + "Questions";
+    let answerSet = selectedQuiz + "Answers";
+    let progressKey = `quizProgress_${selectedQuiz}`; // Unique key for each quiz
+
+    // Load progress for this specific quiz
+    let savedProgress = JSON.parse(localStorage.getItem(progressKey));
+    if (savedProgress) {
+        quizData = savedProgress;
+    }
+
     // Reset option styles before applying new data
     let options = ["option-11", "option-12", "option-13", "option-14"];
     options.forEach(optionId => {
         let option = document.getElementById(optionId);
-        option.style.border = "1px solid black"; // Default border
-        option.style.backgroundColor = "white"; // Reset background
+        option.style.border = "1px solid black";
+        option.style.backgroundColor = "white";
     });
 
-    // Update option values with new question data
-    document.getElementById("option-11").value = quizData.Q1Answers[page];
-    document.getElementById("option-12").value = quizData.Q1Answers[page + 10];
-    document.getElementById("option-13").value = quizData.Q1Answers[page + 20];
-    document.getElementById("option-14").value = quizData.Q1Answers[page + 30];
-    document.getElementById("QuestionHeader").innerHTML = quizData.Q1Questions[page];
+    // Update question and answer choices
+    document.getElementById("QuestionHeader").innerHTML = quizData[questionSet][page];
 
-    // Reset results
+    document.getElementById("option-11").value = quizData[answerSet][page];
+    document.getElementById("option-12").value = quizData[answerSet][page + 10];
+    document.getElementById("option-13").value = quizData[answerSet][page + 20];
+    document.getElementById("option-14").value = quizData[answerSet][page + 30];
+
+    // Reset result text
     document.getElementById("result-11").innerHTML = "";
     document.getElementById("result-12").innerHTML = "";
     document.getElementById("result-13").innerHTML = "";
     document.getElementById("result-14").innerHTML = "";
 
-    // Only apply styles if an answer has been given for this question
+    // Restore previous selection if the question was answered
     if (quizData.Answered[page] === true) {
         let answerId = quizData.AnsweredA[page];
-        let correctAnswerKey = "A" + answerId.charAt(1); // "A1", "A2", etc.
+        let selectedOption = `option-1${answerId.charAt(1)}`;
+        let correctAnswerKey = selectedQuiz + answerId;
+        let isCorrect = quizData[correctAnswerKey][page];
 
-        if (quizData[correctAnswerKey][page] === true) {
-            document.getElementById(`option-1${answerId.charAt(1)}`).style.border = "3px solid limegreen";
-            document.getElementById(`option-1${answerId.charAt(1)}`).style.backgroundColor = "limegreen";
-            document.getElementById(`result-1${answerId.charAt(1)}`).innerHTML = "Correct!!";
-        } else {
-            document.getElementById(`option-1${answerId.charAt(1)}`).style.border = "3px solid red";
-            document.getElementById(`option-1${answerId.charAt(1)}`).style.backgroundColor = "red";
-            document.getElementById(`result-1${answerId.charAt(1)}`).innerHTML = "Incorrect!!";
-        }
+        document.getElementById(selectedOption).style.border = isCorrect ? "3px solid limegreen" : "3px solid red";
+        document.getElementById(selectedOption).style.backgroundColor = isCorrect ? "limegreen" : "red";
+        document.getElementById(`result-1${answerId.charAt(1)}`).innerHTML = isCorrect ? "Correct!!" : "Incorrect!!";
     }
+}
+
+function flipflash() {
+    document.getElementById("flashcard").classList.toggle("flipped");
 }

@@ -1,11 +1,22 @@
-﻿<div class="jumbotron bg-cover" style="background-image: linear-gradient(to bottom,
-rgba(255,255,255,0.6) 0%,rgba(255,255,255,0.9) 100%), url(img/SUShop.jpg); height: 80vh;">
-    <div class="container">
-        <h1 class="display-4">Welcome</h1>
-        <p class="lead font-weight-bold">
-            Welcome to the COMP1004 sample Single Page Application. In this example,
-            we shall load a map, a treasure game, and a data chart into this space to illustrate how JQuery
-            will allow you to provide a rich user experience on one HTML page.
-        </p>
+﻿<head>
+<link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body>
+    <div class="jumbotron bg-cover" id="flashcard-screen" style="height: 80vh;">
+        <div class="flashcard-container">
+            <div id="flashcard" class="flashcard">
+                <div class="front" style="background-image: url(img/flashcard.jpg)">
+                </div>
+                <div class="back">
+                    <p id="answer">Answer Here</p>
+                </div>
+            </div>
+            <button class="flash-button" id="flip-card">Flip Card</button>
+            <button class="flash-button" id="next-card">Next Card</button>
+        </div>
     </div>
-</div>
+    <script>
+        document.getElementById("flashcard").addEventListener("click", flipflash)
+        document.getElementById("flip-card").addEventListener("click", flipflash)
+    </script>
+</body>

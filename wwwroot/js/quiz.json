@@ -5,10 +5,33 @@
                  "3", "7", "11", "15", "19", "23", "27", "31", "35", "39",
                  "4", "8", "12", "16", "20", "24", "28", "32", "36", "40" ],
 
-  "A1": [ true, false, true, false, true, false, true, false, true, false ],
-  "A2": [ false, true, false, true, false, true, false, true, false, true ],
-  "A3": [ true, false, true, false, true, false, true, false, true, false ],
-  "A4": [ false, true, false, true, false, true, false, true, false, true ],
+  "Q1A1": [ true, false, true, false, true, false, true, false, true, false ],
+  "Q1A2": [ false, true, false, true, false, true, false, true, false, true ],
+  "Q1A3": [ true, false, true, false, true, false, true, false, true, false ],
+  "Q1A4": [ false, true, false, true, false, true, false, true, false, true ],
+
+  "Q2Questions": [ "Q11", "Q22", "Q33", "Q44", "Q55", "Q66", "Q77", "Q88", "Q99", "Q10"],
+  "Q2Answers": [ "1", "5", "9", "13", "17", "21", "25", "29", "33", "37",
+                 "2", "6", "10", "14", "18", "22", "26", "30", "34", "38",
+                 "3", "7", "11", "15", "19", "23", "27", "31", "35", "39",
+                 "4", "8", "12", "16", "20", "24", "28", "32", "36", "40" ],
+
+  "Q2A1": [ true, false, true, false, true, false, true, false, true, false ],
+  "Q2A2": [ false, true, false, true, false, true, false, true, false, true ],
+  "Q2A3": [ true, false, true, false, true, false, true, false, true, false ],
+  "Q2A4": [ false, true, false, true, false, true, false, true, false, true ],
+
+  "Q3Questions": [ "Q111", "Q222", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q9", "Q10"],
+  "Q3Answers": [ "1", "5", "9", "13", "17", "21", "25", "29", "33", "37",
+                 "2", "6", "10", "14", "18", "22", "26", "30", "34", "38",
+                 "3", "7", "11", "15", "19", "23", "27", "31", "35", "39",
+                 "4", "8", "12", "16", "20", "24", "28", "32", "36", "40" ],
+
+  "Q3A1": [ true, false, true, false, true, false, true, false, true, false ],
+  "Q3A2": [ false, true, false, true, false, true, false, true, false, true ],
+  "Q3A3": [ true, false, true, false, true, false, true, false, true, false ],
+  "Q3A4": [ false, true, false, true, false, true, false, true, false, true ],
+
   "Answered": [ false, false, false, false, false, false, false, false, false, false ],
   "AnsweredA": [ "A0", "A0", "A0", "A0", "A0", "A0", "A0", "A0", "A0", "A0" ]
 }

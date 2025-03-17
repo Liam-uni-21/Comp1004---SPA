@@ -1,4 +1,7 @@
-﻿<body>
+﻿<head>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
     <div class="jumbotron bg-cover" style="height: 80vh;">
         <h1 style="text-align: center;">Trivia!</h1>
         <div class="container">
@@ -11,12 +14,7 @@
                         <label for="option-11" style="padding: 5px; font-size: 2.5rem;">
                             <input type="button"
                                    id="option-11"
-                                   style="
-                    transform: scale(1.0);
-                    margin-right: 10px;
-                    vertical-align: middle;
-                    margin-top: -2px;
-                    "
+                                   class="answer-button"
                                    onclick="displayAnswer1(this)" />
                         </label>
                         <span id="result-11"></span>
@@ -26,12 +24,7 @@
                         <label for="option-12" style="padding: 5px; font-size: 2.5rem;">
                             <input type="button"
                                    id="option-12"
-                                   style="
-                    transform: scale(1.0);
-                    margin-right: 10px;
-                    vertical-align: middle;
-                    margin-top: -2px;
-                    "
+                                   class="answer-button"
                                    onclick="displayAnswer1(this)" />
                         </label>
                         <span id="result-12"></span>
@@ -41,12 +34,7 @@
                         <label for="option-13" style="padding: 5px; font-size: 2.5rem;">
                             <input type="button"
                                    id="option-13"
-                                   style="
-                    transform: scale(1.0);
-                    margin-right: 10px;
-                    vertical-align: middle;
-                    margin-top: -2px;
-                    "
+                                   class="answer-button"
                                    onclick="displayAnswer1(this)" />
                         </label>
                         <span id="result-13"></span>
@@ -56,25 +44,13 @@
                         <label for="option-14" style="padding: 5px; font-size: 2.5rem;">
                             <input type="button"
                                    id="option-14"
-                                   style="
-                    transform: scale(1.0);
-                    margin-right: 10px;
-                    vertical-align: middle;
-                    margin-top: -2px;
-                    "
+                                   class="answer-button"
                                    onclick="displayAnswer1(this)" />
                         </label>
                         <span id="result-14"></span>
                     </span>
                 </form>
                 <div></div>
-                <style>
-                    .NextPrev {
-                        display: inline-block;
-                        font-size: 20px;
-                        padding: 20px;
-                    }
-                </style>
                 <ul class="nav flex-row p-2">
                     <li class="NextPrev"><a class="nav-link text-blue p-2" href="#" id="prev">Prev</a></li>
                     <li class="NextPrev"><a class="nav-link text-blue p-2" href="#" id="next">Next</a></li>
@@ -86,30 +62,40 @@
     <script>
         var page = 0;
         var quizData = {};  // Store quiz data globally
+        var selectedQuiz = localStorage.getItem("selectedQuiz");
 
         // Fetch quiz data once
         fetch("js/quiz.json")
-            .then(response => response.json())  // Convert response to JSON
+            .then(response => response.json())
             .then(data => {
-                quizData = data;  // Store in global variable
-                updateQuestion();  // Call function to display first question
+                let selectedQuiz = localStorage.getItem("selectedQuiz");
+                let progressKey = `quizProgress_${selectedQuiz}`;
+
+                let savedProgress = localStorage.getItem(progressKey);
+                if (savedProgress) {
+                    quizData = JSON.parse(savedProgress);
+                } else {
+                    quizData = data;
+                }
+                updateQuestion();
             })
             .catch(error => console.error("Error loading quiz data:", error));
 
-        // Next button click event
+
+
         document.getElementById("next").addEventListener("click", function () {
-            page++;
-            if (page >= quizData.Q1Questions.length) {
-                page = 9; // Loop back to the first question if out of bounds
+            let questionSet = selectedQuiz + "Questions"; // Dynamic quiz selection
+            if (page < quizData[questionSet].length - 1) {
+                page++;
+                updateQuestion();
             }
-            updateQuestion(); // Update the question and answers
         });
+
         document.getElementById("prev").addEventListener("click", function () {
-            page--;
-            if (page <= 0) {
-                page = 0;
+            if (page > 0) {
+                page--;
+                updateQuestion();
             }
-            updateQuestion();
         });
 
     </script>

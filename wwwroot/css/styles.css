@@ -1,0 +1,63 @@
+﻿/* Flashcard Styling */
+#flashcard-screen {
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    background: linear-gradient(135deg, #f5a623, #f29d77)
+}
+.flashcard-container{
+    text-align:center;
+    background-color: white;
+    padding: 100px;
+    border-radius: 20px;
+}
+.flashcard {
+    position: relative; /* Ensure it contains front and back */
+    transform-style: preserve-3d;
+    transition: all 0.5s ease-in-out;
+}
+
+.front, .back {
+    backface-visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.flashcard .front {
+    transform: rotateY(0deg); /* Front is visible by default */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flashcard .back {
+    transform: rotateY(180deg);
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: lightgray;
+}
+
+.flashcard.flipped {
+    transform: rotateY(180deg);
+}
+
+/* Quiz Styling */
+.NextPrev {
+    display: inline-block;
+    font-size: 20px;
+    padding: 20px;
+}
+.answer-button {
+    transform: scale(1.0);
+    margin-right: 10px;
+    vertical-align: middle;
+    margin-top: -2px;
+}
