@@ -1,0 +1,44 @@
+﻿<body>
+    <div class="jumbotron bg-cover" style="height: 80vh;">
+        <div class="container">
+            <h1 class="display-4" style="text-align: center">Flashcard Selector</h1>
+        </div>
+        <div>
+            <span class="flash-block" style="padding: 10px;">
+                <label for="option-F1" style="padding: 5px; font-size: 2.5rem;">
+                    <input type="button"
+                           id="option-F1"
+                           value="Flashcards1"
+                           class="flashcard-selection"
+                           onclick="Flashselection('F1')" />
+                </label>
+            </span>
+
+            <span class="flash-block" style="padding: 10px;">
+                <label for="option-Q2" style="padding: 5px; font-size: 2.5rem;">
+                    <input type="button"
+                           id="option-F2"
+                           value="Flashcards2"
+                           class="flashcard-selection"  
+                           onclick="Flashselection('F2')" />
+                </label>
+            </span>
+
+            <span class="flash-block" style="padding: 10px;">
+                <label for="option-Q3" style="padding: 5px; font-size: 2.5rem;">
+                    <input type="button"
+                           id="option-F3"
+                           value="Flashcards3"
+                           class="flashcard-selection"
+                           onclick="Flashselection('F3')" />
+                </label>
+            </span>
+        </div>
+    </div>
+    <script>
+        function Flashselection(flashKey) {
+            localStorage.setItem("selectedFlash", flashKey);
+            $('#page-content-wrapper').load('flashcards.html');
+        }
+    </script>
+</body>

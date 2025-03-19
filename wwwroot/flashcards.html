@@ -6,18 +6,31 @@
         <div class="flashcard-container">
             <div id="flashcard" class="flashcard">
                 <div class="front">
-                    <p id="question">i love coburn</p>
+                    <p id="question"></p>
                 </div>
                 <div class="back">
-                    <p id="answer">Answer Here</p>
+                    <p id="answer"></p>
                 </div>
             </div>
-            <button class="flash-button" id="flip-card">Flip Card</button>
-            <button class="flash-button" id="next-card">Next Card</button>
+            <button class="flash-button" id="dontknow">Don't Know</button>
+            <button class="flash-button" id="know">Do Know</button>
         </div>
     </div>
     <script>
-        document.getElementById("flashcard").addEventListener("click", flipflash)
-        document.getElementById("flip-card").addEventListener("click", flipflash)
+        var flashinc = 0;
+        var flashdata = {};
+        var selectedFlash = localStorage.getItem("selectedFlash");
+
+        fetch("js/flashcards.json")
+            .then(response => response.json())
+            .then(data => {
+                let selectedFlash = localStorage.getItem("selectedFlash");
+                flashdata = data;
+                updateFlashcard();
+            })
+
+        document.getElementById("flashcard").addEventListener("click", flipflash);
+        document.getElementById("dontknow").addEventListener("click", nextFlashcard);
+        document.getElementById("know").addEventListener("click", nextFlashcard);
     </script>
 </body>

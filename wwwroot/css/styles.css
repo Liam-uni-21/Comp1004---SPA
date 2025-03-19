@@ -1,4 +1,11 @@
-﻿/* Flashcard Styling */
+﻿/* Flashcard Home Styling*/
+.flashcard-selection {
+    transform: scale(1.0);
+    margin-right: 10px;
+    vertical-align: middle;
+    margin-top: -2px;
+}
+/* Flashcard Styling */
 #flashcard-screen {
     font-family: sans-serif;
     display: flex;
@@ -10,12 +17,12 @@
 .flashcard-container{
     text-align:center;
     background-color: white;
-    padding: 100px;
+    padding: 80px;
     border-radius: 20px;
 }
 .flashcard {
-    width: 300px;
-    height: 200px;
+    width: 400px;
+    height: 250px;
     position: relative; /* Ensure it contains front and back */
     transform-style: preserve-3d;
     transition: all 0.5s ease-in-out;
@@ -29,7 +36,7 @@
     height: 100%;
     width: 100%;
     border-radius: 10px;
-    background-image: url(img/flashcard-image.jpg);
+    background-image: url('../img/flashcard-background.jpg');
 }
 
 .flashcard .front {
@@ -58,6 +65,14 @@
     padding: 20px;
 }
 .answer-button {
+    transform: scale(1.0);
+    margin-right: 10px;
+    vertical-align: middle;
+    margin-top: -2px;
+}
+
+/* Quiz Home Styling*/
+.quiz-selection {
     transform: scale(1.0);
     margin-right: 10px;
     vertical-align: middle;

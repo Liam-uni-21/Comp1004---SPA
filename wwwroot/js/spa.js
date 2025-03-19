@@ -5,22 +5,17 @@
 });
 $(document).ready(function () {
     $('#flashcards').click(function () {
-        $('#page-content-wrapper').load('flashcards.html');
+        $('#page-content-wrapper').load('flashcardhome.html');
     })
 });
 $(document).ready(function () {
     $('#dashboard').click(function () {
-        $('#page-content-wrapper').load('dashboard.html');
+        $('#page-content-wrapper').load('create_flashcards.html');
     })
 });
 $(document).ready(function () {
     $('#home').click(function () {
         $('#page-content-wrapper').load('home.html');
-    })
-});
-$(document).ready(function () {
-    $('#option-Q1').click(function () {
-        $('#page-content-wrapper').load('quiz.html');
     })
 });
 
@@ -100,4 +95,21 @@ function updateQuestion() {
 
 function flipflash() {
     document.getElementById("flashcard").classList.toggle("flipped");
+}
+
+function updateFlashcard() {
+    let selectedFlash = localStorage.getItem("selectedFlash");
+    let questionSet = selectedFlash + "Questions";
+    let answerSet = selectedFlash + "Answers";
+
+    document.getElementById("question").innerText = flashdata[questionSet][flashinc];
+    document.getElementById("answer").innerText = flashdata[answerSet][flashinc];
+}
+
+function nextFlashcard() {
+    let questionSet = selectedFlash + "Questions";
+    if (flashinc < flashdata[questionSet].length - 1) {
+        flashinc++;
+        updateFlashcard();
+    }
 }
