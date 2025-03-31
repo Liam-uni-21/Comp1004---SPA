@@ -1,0 +1,109 @@
+﻿<head>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+    <div class="jumbotron bg-cover" id="flashcard-screen" style="height: 80vh;">
+        <div class="flashcard-container">
+            <label>
+                <span>Enter flashcard set name</span>
+                <input type="text" id="setname" />
+            </label>
+            <div id="flashcard" class="flashcard">
+                <div class="front" id="flashcard-creator">
+                    <label id="set-question-label">
+                        <span>Enter flashcard question</span>
+                        <input type="text" id="set-question" />
+                    </label>
+                    <label id="set-answer-label">
+                        <span>Enter flashcard answer</span>
+                        <input type="text" id="set-answer" />
+                    </label>
+                </div>
+            </div>
+            <button class="flash-button" id="set-remove">Remove Card</button>
+            <button class="flash-button" id="set-new">Create New Card</button>
+            <button class="flash-button" id="set-save">Save Set</button>
+            <div>
+                <a href="#" id="set-previous">&laquo; Previous</a>
+                <a href="#" id="set-next">Next &raquo;</a>
+            </div>
+            <div>
+                <p id="counter">1/1</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var flashcards = [];
+            var createinc = 0;
+
+            const questionInput = document.getElementById("set-question");
+            const answerInput = document.getElementById("set-answer");
+            const counter = document.getElementById("counter");
+
+            const prevBtn = document.getElementById("set-previous");
+            const nextBtn = document.getElementById("set-next");
+            const removeBtn = document.getElementById("set-remove");
+            const newBtn = document.getElementById("set-new");
+            const saveBtn = document.getElementById("set-save");
+
+            function updateCounter() {
+                counter.textContent = `${flashcards.length ? createinc + 1 : 0}/${flashcards.length}`;
+            }
+
+            function updateFlashcard() {
+                if (flashcards.length > 0 && createinc < flashcards.length) {
+                    questionInput.value = flashcards[createinc].question;
+                    answerInput.value = flashcards[createinc].answer;
+                } else {
+                    questionInput.value = "";
+                    answerInput.value = "";
+                }
+                updateCounter();
+            }
+
+            newBtn.addEventListener("click", function () {
+                if (questionInput.value.trim() && answerInput.value.trim()) {
+                    flashcards.push({ question: questionInput.value, answer: answerInput.value });
+                    createinc = flashcards.length - 1;
+                    questionInput.value = "";
+                    answerInput.value = "";
+                    updateFlashcard();
+                }
+            });
+
+            prevBtn.addEventListener("click", function (e) {
+                e.preventDefault();
+                if (createinc > 0) {
+                    createinc--;
+                    updateFlashcard();
+                }
+            });
+            nextBtn.addEventListener("click", function (e) {
+                e.preventDefault();
+                if (createinc < flashcards.length - 1) {
+                    createinc++;
+                    updateFlashcard();
+                }
+            });
+
+            removeBtn.addEventListener("click", function () {
+                if (flashcards.length > 0) {
+                    flashcards.splice(createinc, 1);
+                    createinc = Math.max(0, createinc - 1);
+                    updateFlashcard();
+                }
+            });
+
+            saveBtn.addEventListener("click", function () {
+                let setname = document.getElementById("setname").value;
+                if (flashcards.length > 0) {
+                    localStorage.setItem(setname, JSON.stringify(flashcards));
+                    alert("Flashcard set saved!");
+                    $('#page-content-wrapper').load('flashcardhome.html');
+                }
+            });
+        })();
+    </script>
+</body>

@@ -5,6 +5,12 @@
     vertical-align: middle;
     margin-top: -2px;
 }
+
+/*Flashcard creation styling*/
+#flashcard-creator{
+    display:flex;
+    flex-direction: column;
+}
 /* Flashcard Styling */
 #flashcard-screen {
     font-family: sans-serif;

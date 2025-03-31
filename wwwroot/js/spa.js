@@ -1,4 +1,5 @@
-﻿$(document).ready(function () {
+﻿
+$(document).ready(function () {
     $('#quiz').click(function () {
         $('#page-content-wrapper').load('quizhome.html');
     })
@@ -10,7 +11,7 @@ $(document).ready(function () {
 });
 $(document).ready(function () {
     $('#dashboard').click(function () {
-        $('#page-content-wrapper').load('create_flashcards.html');
+        $('#page-content-wrapper').load('dashboard.html');
     })
 });
 $(document).ready(function () {
@@ -19,6 +20,7 @@ $(document).ready(function () {
     })
 });
 
+// Quiz functionality
 function displayAnswer1(element) {
     let selectedQuiz = localStorage.getItem("selectedQuiz");
     let progressKey = `quizProgress_${selectedQuiz}`; // Unique key for each quiz
@@ -45,7 +47,6 @@ function displayAnswer1(element) {
         document.getElementById(`result-1${selectedOption.charAt(1)}`).innerHTML = isCorrect ? "Correct!!" : "Incorrect!!";
     }
 }
-
 function updateQuestion() {
     let selectedQuiz = localStorage.getItem("selectedQuiz");
     let questionSet = selectedQuiz + "Questions";
@@ -93,19 +94,25 @@ function updateQuestion() {
     }
 }
 
+// Flashcard Functionality
 function flipflash() {
     document.getElementById("flashcard").classList.toggle("flipped");
 }
 
 function updateFlashcard() {
-    let selectedFlash = localStorage.getItem("selectedFlash");
-    let questionSet = selectedFlash + "Questions";
-    let answerSet = selectedFlash + "Answers";
-
-    document.getElementById("question").innerText = flashdata[questionSet][flashinc];
-    document.getElementById("answer").innerText = flashdata[answerSet][flashinc];
+    if (flashdata && Array.isArray(flashdata) && flashdata.length > 0) {
+        // For custom flashcards saved from your creation page
+        document.getElementById("question").textContent = flashdata[flashinc].question;
+        document.getElementById("answer").textContent = flashdata[flashinc].answer;
+    } else if (flashdata && selectedFlash && flashdata[selectedFlash]) {
+        // For pre-defined flashcards from your JSON file
+        let currentSet = flashdata[selectedFlash];
+        if (currentSet && currentSet.length > 0) {
+            document.getElementById("question").textContent = currentSet[flashinc].question;
+            document.getElementById("answer").textContent = currentSet[flashinc].answer;
+        }
+    }
 }
-
 function nextFlashcard() {
     let questionSet = selectedFlash + "Questions";
     if (flashinc < flashdata[questionSet].length - 1) {
@@ -113,3 +120,4 @@ function nextFlashcard() {
         updateFlashcard();
     }
 }
+// Create Flashcard Functionality

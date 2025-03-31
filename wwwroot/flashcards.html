@@ -21,14 +21,87 @@
         var flashdata = {};
         var selectedFlash = localStorage.getItem("selectedFlash");
 
-        fetch("js/flashcards.json")
-            .then(response => response.json())
-            .then(data => {
-                let selectedFlash = localStorage.getItem("selectedFlash");
-                flashdata = data;
-                updateFlashcard();
-            })
+        // Check if it's a custom set in localStorage
+        if (selectedFlash && selectedFlash !== "F1" && selectedFlash !== "F2" && selectedFlash !== "F3") {
+            try {
+                // Try to get the custom set from localStorage
+                const customData = localStorage.getItem(selectedFlash);
+                if (customData) {
+                    flashdata = JSON.parse(customData);
+                    updateFlashcard();
+                } else {
+                    document.getElementById("question").textContent = "No flashcards found.";
+                }
+            } catch (e) {
+                console.error("Error loading custom flashcards:", e);
+                document.getElementById("question").textContent = "Error loading flashcards.";
+            }
+        } else {
+            // It's one of the predefined sets from your JSON file
+            fetch("js/flashcards.json")
+                .then(response => response.json())
+                .then(data => {
+                    flashdata = data;
+                    updateFlashcard();
+                })
+                .catch(error => {
+                    console.error("Error loading predefined flashcards:", error);
+                    document.getElementById("question").textContent = "Error loading flashcards.";
+                });
+        }
 
+        function updateFlashcard() {
+            if (selectedFlash === "F1" || selectedFlash === "F2" || selectedFlash === "F3") {
+                // Handle predefined flashcards from JSON file
+                const questionsKey = selectedFlash + "Questions";
+                const answersKey = selectedFlash + "Answers";
+
+                if (flashdata && flashdata[questionsKey] && flashdata[answersKey] &&
+                    flashinc < flashdata[questionsKey].length) {
+                    // This matches your JSON structure with separate question and answer arrays
+                    document.getElementById("question").textContent = flashdata[questionsKey][flashinc];
+                    document.getElementById("answer").textContent = flashdata[answersKey][flashinc];
+                } else {
+                    // Fallback
+                    document.getElementById("question").textContent = "No questions available for " + selectedFlash;
+                    document.getElementById("answer").textContent = "";
+                }
+            } else {
+                // Handle custom flashcards from localStorage
+                if (Array.isArray(flashdata) && flashdata.length > 0 && flashinc < flashdata.length) {
+                    document.getElementById("question").textContent = flashdata[flashinc].question;
+                    document.getElementById("answer").textContent = flashdata[flashinc].answer;
+                } else {
+                    document.getElementById("question").textContent = "No flashcards available";
+                    document.getElementById("answer").textContent = "";
+                }
+            }
+        }
+
+        function flipflash() {
+            document.getElementById("flashcard").classList.toggle("flipped");
+        }
+
+        function nextFlashcard() {
+            document.getElementById("flashcard").classList.remove("flipped");
+
+            if (selectedFlash === "F1" || selectedFlash === "F2" || selectedFlash === "F3") {
+                const questionsKey = selectedFlash + "Questions";
+                if (flashdata[questionsKey] && flashinc < flashdata[questionsKey].length - 1) {
+                    flashinc++;
+                } else {
+                    flashinc = 0; // Loop back to the first card
+                }
+            } else {
+                if (Array.isArray(flashdata) && flashinc < flashdata.length - 1) {
+                    flashinc++;
+                } else {
+                    flashinc = 0; // Loop back to the first card
+                }
+            }
+
+            updateFlashcard();
+        }
         document.getElementById("flashcard").addEventListener("click", flipflash);
         document.getElementById("dontknow").addEventListener("click", nextFlashcard);
         document.getElementById("know").addEventListener("click", nextFlashcard);
