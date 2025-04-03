@@ -54,7 +54,6 @@
             $('#page-content-wrapper').load('flashcard-creation.html');
         });
 
-        // Call populateCustomSets after the page loads
         $(document).ready(function () {
             populateCustomSets();
         });
@@ -63,20 +62,15 @@
             const customCardsDiv = document.getElementById("customcards");
             customCardsDiv.innerHTML = "";
 
-            // Loop through localStorage keys
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
 
-                // Skip keys that aren't flashcard sets
                 if (key === "selectedFlash") continue;
 
                 try {
-                    // Try to parse the value as JSON to confirm it's a flashcard set
                     const data = JSON.parse(localStorage.getItem(key));
 
-                    // Only create a button if it's a valid flashcard set (an array)
                     if (Array.isArray(data) && data.length > 0) {
-                        // Create a button for this set
                         const span = document.createElement("span");
                         span.className = "flash-block";
                         span.style.padding = "10px";
@@ -98,12 +92,10 @@
                         console.log("Added custom flashcard set:", key);
                     }
                 } catch (e) {
-                    // Not a valid JSON - skip this key
                     console.log("Skipping non-flashcard key:", key);
                 }
             }
         }
-        // Call this function when the page loads
         document.addEventListener("DOMContentLoaded", populateCustomSets);
     </script>
 </body>

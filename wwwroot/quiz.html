@@ -61,10 +61,9 @@
 
     <script>
         var page = 0;
-        var quizData = {};  // Store quiz data globally
+        var quizData = {}; 
         var selectedQuiz = localStorage.getItem("selectedQuiz");
 
-        // Fetch quiz data once
         fetch("js/quiz.json")
             .then(response => response.json())
             .then(data => {
@@ -81,21 +80,51 @@
             })
             .catch(error => console.error("Error loading quiz data:", error));
 
-        document.getElementById("next").addEventListener("click", function () {
-            let questionSet = selectedQuiz + "Questions"; // Dynamic quiz selection
+        function nextFunc() {
+            let questionSet = selectedQuiz + "Questions";
+
             if (page < quizData[questionSet].length - 1) {
                 page++;
                 updateQuestion();
+                console.log(page);
             }
-        });
 
-        document.getElementById("prev").addEventListener("click", function () {
+            if (page === quizData[questionSet].length - 1) {
+                let nextButton = document.getElementById("next");
+                nextButton.textContent = "Finish";
+                console.log(page);
+
+                nextButton.removeEventListener("click", nextFunc);
+                nextButton.addEventListener("click", function finishFunc() {
+                    quizData.completed = true;
+                    let progressKey = `quizProgress_${selectedQuiz}`;
+                    localStorage.setItem(progressKey, JSON.stringify(quizData));
+                    nextButton.removeEventListener("click", finishFunc);
+                    $('#page-content-wrapper').load('quizhome.html');
+                });
+            }
+        }
+
+        function prevFunc() {
+            let questionSet = selectedQuiz + "Questions";
+
             if (page > 0) {
                 page--;
                 updateQuestion();
             }
-        });
 
+            if (page < quizData[questionSet].length - 1) {
+                let nextButton = document.getElementById("next");
+                nextButton.textContent = "Next";
+
+                let newNextButton = nextButton.cloneNode(true);
+                nextButton.parentNode.replaceChild(newNextButton, nextButton);
+                newNextButton.addEventListener("click", nextFunc);
+            }
+        }
+
+        document.getElementById("next").addEventListener("click", nextFunc);
+        document.getElementById("prev").addEventListener("click", prevFunc);
     </script>
 
 </body>

@@ -23,7 +23,7 @@ $(document).ready(function () {
 // Quiz functionality
 function displayAnswer1(element) {
     let selectedQuiz = localStorage.getItem("selectedQuiz");
-    let progressKey = `quizProgress_${selectedQuiz}`; // Unique key for each quiz
+    let progressKey = `quizProgress_${selectedQuiz}`;
 
     let selectedOption = "";
     if (element == document.getElementById("option-11")) selectedOption = "A1";
@@ -35,7 +35,6 @@ function displayAnswer1(element) {
         quizData.AnsweredA[page] = selectedOption;
         quizData.Answered[page] = true;
 
-        // Save progress with unique key
         localStorage.setItem(progressKey, JSON.stringify(quizData));
 
         let correctAnswerKey = selectedQuiz + selectedOption;
@@ -51,15 +50,13 @@ function updateQuestion() {
     let selectedQuiz = localStorage.getItem("selectedQuiz");
     let questionSet = selectedQuiz + "Questions";
     let answerSet = selectedQuiz + "Answers";
-    let progressKey = `quizProgress_${selectedQuiz}`; // Unique key for each quiz
+    let progressKey = `quizProgress_${selectedQuiz}`;
 
-    // Load progress for this specific quiz
     let savedProgress = JSON.parse(localStorage.getItem(progressKey));
     if (savedProgress) {
         quizData = savedProgress;
     }
 
-    // Reset option styles before applying new data
     let options = ["option-11", "option-12", "option-13", "option-14"];
     options.forEach(optionId => {
         let option = document.getElementById(optionId);
@@ -67,7 +64,6 @@ function updateQuestion() {
         option.style.backgroundColor = "white";
     });
 
-    // Update question and answer choices
     document.getElementById("QuestionHeader").innerHTML = quizData[questionSet][page];
 
     document.getElementById("option-11").value = quizData[answerSet][page];
@@ -75,13 +71,11 @@ function updateQuestion() {
     document.getElementById("option-13").value = quizData[answerSet][page + 20];
     document.getElementById("option-14").value = quizData[answerSet][page + 30];
 
-    // Reset result text
     document.getElementById("result-11").innerHTML = "";
     document.getElementById("result-12").innerHTML = "";
     document.getElementById("result-13").innerHTML = "";
     document.getElementById("result-14").innerHTML = "";
 
-    // Restore previous selection if the question was answered
     if (quizData.Answered[page] === true) {
         let answerId = quizData.AnsweredA[page];
         let selectedOption = `option-1${answerId.charAt(1)}`;
@@ -101,11 +95,9 @@ function flipflash() {
 
 function updateFlashcard() {
     if (flashdata && Array.isArray(flashdata) && flashdata.length > 0) {
-        // For custom flashcards saved from your creation page
         document.getElementById("question").textContent = flashdata[flashinc].question;
         document.getElementById("answer").textContent = flashdata[flashinc].answer;
     } else if (flashdata && selectedFlash && flashdata[selectedFlash]) {
-        // For pre-defined flashcards from your JSON file
         let currentSet = flashdata[selectedFlash];
         if (currentSet && currentSet.length > 0) {
             document.getElementById("question").textContent = currentSet[flashinc].question;
@@ -120,4 +112,3 @@ function nextFlashcard() {
         updateFlashcard();
     }
 }
-// Create Flashcard Functionality

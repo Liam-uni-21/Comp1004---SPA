@@ -2,12 +2,85 @@
     <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-    <div class="jumbotron bg-cover" id="flashcard-screen" style="height: 80vh;">
-        <h1 style="text-align: center">Data</h1>
-        <div>
-            <h1 id="total-time">gello</h1>
+    <div class="jumbotron bg-cover" id="dashboard-screen" style="height: 80vh;">
+        <h1 style="text-align: center">Study review</h1>
+
+        <!-- Quiz Buttons Section -->
+        <div id="quiz-list" style="text-align: center;">
+            <h2>Completed</h2>
+            <div id="quiz-buttons"></div>
+        </div>
+
+        <!-- Review Section (Displays Incorrect Answers) -->
+        <div id="review-section" style="display: none; margin-top: 20px; overflow-y: auto; max-height: 50vh; border: 1px solid black; padding: 10px;">
+            <h2>Areas for Improvement</h2>
+            <div id="incorrect-answers"></div>
         </div>
     </div>
     <script>
+        function loadCompletedQuizzes() {
+            let quizButtonsDiv = document.getElementById("quiz-buttons");
+            quizButtonsDiv.innerHTML = "";
+
+            let foundQuizzes = false; // Track if any quizzes were found
+
+            Object.keys(localStorage).forEach((key) => {
+                if (key.startsWith("quizProgress_")) {
+                    let quizData = JSON.parse(localStorage.getItem(key));
+
+                    if (quizData && quizData.completed) {
+                        foundQuizzes = true;
+                        let quizName = key.replace("quizProgress_", "");
+
+                        let button = document.createElement("button");
+                        button.textContent = quizName;
+                        button.style.margin = "5px";
+                        button.onclick = function () {
+                            loadIncorrectAnswers(quizName);
+                        };
+
+                        quizButtonsDiv.appendChild(button);
+                    }
+                }
+            });
+        }
+        function loadIncorrectAnswers(quizName) {
+            let progressKey = `quizProgress_${quizName}`;
+            let quizData = JSON.parse(localStorage.getItem(progressKey));
+
+            let reviewSection = document.getElementById("review-section");
+            let incorrectAnswersDiv = document.getElementById("incorrect-answers");
+
+            incorrectAnswersDiv.innerHTML = ""; // Clear previous results
+
+            let questionSet = quizName + "Questions";
+            let answerSet = quizName + "Answers";
+
+            if (!quizData[questionSet] || !quizData[answerSet]) {
+                incorrectAnswersDiv.innerHTML = "<p>Quiz data not found.</p>";
+                return;
+            }
+
+            for (let i = 0; i < quizData[questionSet].length; i++) {
+                if (quizData.Answered[i] && !quizData[quizName + quizData.AnsweredA[i]][i]) {
+                    let questionDiv = document.createElement("div");
+                    questionDiv.style.marginBottom = "10px";
+
+                    questionDiv.innerHTML = `
+                            <strong>Question:</strong> ${quizData[questionSet][i]} <br>
+                            <strong>Your Answer:</strong> ${quizData.AnsweredA[i]} <br>
+                            <strong>Correct Answer:</strong> ${quizData[answerSet][i]} <br>
+                            <hr>
+                        `;
+
+                    incorrectAnswersDiv.appendChild(questionDiv);
+                }
+            }
+            reviewSection.style.display = "block"; // Show the review section
+        }
+
+        $(document).ready(function () {
+            loadCompletedQuizzes();
+        });
     </script>
 </body>

@@ -42,12 +42,6 @@
             const answerInput = document.getElementById("set-answer");
             const counter = document.getElementById("counter");
 
-            const prevBtn = document.getElementById("set-previous");
-            const nextBtn = document.getElementById("set-next");
-            const removeBtn = document.getElementById("set-remove");
-            const newBtn = document.getElementById("set-new");
-            const saveBtn = document.getElementById("set-save");
-
             function updateCounter() {
                 counter.textContent = `${flashcards.length ? createinc + 1 : 0}/${flashcards.length}`;
             }
@@ -63,7 +57,7 @@
                 updateCounter();
             }
 
-            newBtn.addEventListener("click", function () {
+            document.getElementById("set-new").addEventListener("click", function () {
                 if (questionInput.value.trim() && answerInput.value.trim()) {
                     flashcards.push({ question: questionInput.value, answer: answerInput.value });
                     createinc = flashcards.length - 1;
@@ -73,14 +67,14 @@
                 }
             });
 
-            prevBtn.addEventListener("click", function (e) {
+            document.getElementById("set-previous").addEventListener("click", function (e) {
                 e.preventDefault();
                 if (createinc > 0) {
                     createinc--;
                     updateFlashcard();
                 }
             });
-            nextBtn.addEventListener("click", function (e) {
+            document.getElementById("set-next").addEventListener("click", function (e) {
                 e.preventDefault();
                 if (createinc < flashcards.length - 1) {
                     createinc++;
@@ -88,7 +82,7 @@
                 }
             });
 
-            removeBtn.addEventListener("click", function () {
+            document.getElementById("set-remove").addEventListener("click", function () {
                 if (flashcards.length > 0) {
                     flashcards.splice(createinc, 1);
                     createinc = Math.max(0, createinc - 1);
@@ -96,7 +90,7 @@
                 }
             });
 
-            saveBtn.addEventListener("click", function () {
+            document.getElementById("set-save").addEventListener("click", function () {
                 let setname = document.getElementById("setname").value;
                 if (flashcards.length > 0) {
                     localStorage.setItem(setname, JSON.stringify(flashcards));
