@@ -2,7 +2,7 @@
     <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-    <div class="jumbotron bg-cover" style="height: 80vh;">
+    <div class="jumbotron bg-cover" style="height: 80vh; background: linear-gradient(135deg, #f5a623, #f29d77);">
         <h1 style="text-align: center;">Trivia!</h1>
         <div class="container">
             <div class="section">
@@ -15,7 +15,7 @@
                             <input type="button"
                                    id="option-11"
                                    class="answer-button"
-                                   onclick="displayAnswer1(this)" />
+                                   onclick="displayAnswer(this)" />
                         </label> 
                         <span id="result-11"></span>
                     </span>
@@ -25,7 +25,7 @@
                             <input type="button"
                                    id="option-12"
                                    class="answer-button"
-                                   onclick="displayAnswer1(this)" />
+                                   onclick="displayAnswer(this)" />
                         </label>
                         <span id="result-12"></span>
                     </span>
@@ -35,7 +35,7 @@
                             <input type="button"
                                    id="option-13"
                                    class="answer-button"
-                                   onclick="displayAnswer1(this)" />
+                                   onclick="displayAnswer(this)" />
                         </label>
                         <span id="result-13"></span>
                     </span>
@@ -45,7 +45,7 @@
                             <input type="button"
                                    id="option-14"
                                    class="answer-button"
-                                   onclick="displayAnswer1(this)" />
+                                   onclick="displayAnswer(this)" />
                         </label>
                         <span id="result-14"></span>
                     </span>
@@ -86,7 +86,6 @@
             if (page < quizData[questionSet].length - 1) {
                 page++;
                 updateQuestion();
-                console.log(page);
             }
 
             if (page === quizData[questionSet].length - 1) {

@@ -1,5 +1,4 @@
-﻿
-$(document).ready(function () {
+﻿$(document).ready(function () {
     $('#quiz').click(function () {
         $('#page-content-wrapper').load('quizhome.html');
     })
@@ -21,7 +20,7 @@ $(document).ready(function () {
 });
 
 // Quiz functionality
-function displayAnswer1(element) {
+function displayAnswer(element) {
     let selectedQuiz = localStorage.getItem("selectedQuiz");
     let progressKey = `quizProgress_${selectedQuiz}`;
 
@@ -85,30 +84,5 @@ function updateQuestion() {
         document.getElementById(selectedOption).style.border = isCorrect ? "3px solid limegreen" : "3px solid red";
         document.getElementById(selectedOption).style.backgroundColor = isCorrect ? "limegreen" : "red";
         document.getElementById(`result-1${answerId.charAt(1)}`).innerHTML = isCorrect ? "Correct!!" : "Incorrect!!";
-    }
-}
-
-// Flashcard Functionality
-function flipflash() {
-    document.getElementById("flashcard").classList.toggle("flipped");
-}
-
-function updateFlashcard() {
-    if (flashdata && Array.isArray(flashdata) && flashdata.length > 0) {
-        document.getElementById("question").textContent = flashdata[flashinc].question;
-        document.getElementById("answer").textContent = flashdata[flashinc].answer;
-    } else if (flashdata && selectedFlash && flashdata[selectedFlash]) {
-        let currentSet = flashdata[selectedFlash];
-        if (currentSet && currentSet.length > 0) {
-            document.getElementById("question").textContent = currentSet[flashinc].question;
-            document.getElementById("answer").textContent = currentSet[flashinc].answer;
-        }
-    }
-}
-function nextFlashcard() {
-    let questionSet = selectedFlash + "Questions";
-    if (flashinc < flashdata[questionSet].length - 1) {
-        flashinc++;
-        updateFlashcard();
     }
 }

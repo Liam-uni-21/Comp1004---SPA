@@ -34,70 +34,98 @@
     </div>
 
     <script>
-        (function () {
-            var flashcards = [];
-            var createinc = 0;
+        // Declare globally so all functions can access
+        var flashcards = [];
+        var createinc = 0;
+        var questionInput, answerInput, counter;
 
-            const questionInput = document.getElementById("set-question");
-            const answerInput = document.getElementById("set-answer");
-            const counter = document.getElementById("counter");
+        function initializeFlashcards() {
+            // Initialize DOM elements
+            questionInput = document.getElementById("set-question");
+            answerInput = document.getElementById("set-answer");
+            counter = document.getElementById("counter");
 
-            function updateCounter() {
-                counter.textContent = `${flashcards.length ? createinc + 1 : 0}/${flashcards.length}`;
+            // Clear input fields
+            questionInput.value = "";
+            answerInput.value = "";
+
+            // Reset flashcards array
+            flashcards = [];
+            createinc = 0;
+
+            // Reset counter text
+            updateCounter();
+        }
+
+        // Call when the page is ready or whenever needed
+        $(document).ready(function () {
+            // Ensure proper initialization of the inputs and counter
+            initializeFlashcards();
+
+            // Set up event listeners
+            document.getElementById("set-new").addEventListener("click", setNew);
+            document.getElementById("set-previous").addEventListener("click", setPrev);
+            document.getElementById("set-next").addEventListener("click", setNext);
+            document.getElementById("set-remove").addEventListener("click", setRemove);
+            document.getElementById("set-save").addEventListener("click", setSave);
+        });
+
+        function updateCounter() {
+            counter.textContent = `${flashcards.length ? createinc + 1 : 0}/${flashcards.length}`;
+        }
+
+        function updateFlashcard() {
+            if (flashcards.length > 0 && createinc < flashcards.length) {
+                questionInput.value = flashcards[createinc].question;
+                answerInput.value = flashcards[createinc].answer;
+            } else {
+                questionInput.value = "";
+                answerInput.value = "";
             }
+            updateCounter();
+        }
 
-            function updateFlashcard() {
-                if (flashcards.length > 0 && createinc < flashcards.length) {
-                    questionInput.value = flashcards[createinc].question;
-                    answerInput.value = flashcards[createinc].answer;
-                } else {
-                    questionInput.value = "";
-                    answerInput.value = "";
-                }
-                updateCounter();
+        function setNew() {
+            if (questionInput.value.trim() && answerInput.value.trim()) {
+                flashcards.push({ question: questionInput.value, answer: answerInput.value, answered: false, Know: false });
+                createinc = flashcards.length - 1;
+                updateFlashcard();
             }
+        }
 
-            document.getElementById("set-new").addEventListener("click", function () {
-                if (questionInput.value.trim() && answerInput.value.trim()) {
-                    flashcards.push({ question: questionInput.value, answer: answerInput.value });
-                    createinc = flashcards.length - 1;
-                    questionInput.value = "";
-                    answerInput.value = "";
-                    updateFlashcard();
-                }
-            });
+        function setPrev(e) {
+            e.preventDefault();
+            if (createinc > 0) {
+                createinc--;
+                updateFlashcard();
+            }
+        }
 
-            document.getElementById("set-previous").addEventListener("click", function (e) {
-                e.preventDefault();
-                if (createinc > 0) {
-                    createinc--;
-                    updateFlashcard();
-                }
-            });
-            document.getElementById("set-next").addEventListener("click", function (e) {
-                e.preventDefault();
-                if (createinc < flashcards.length - 1) {
-                    createinc++;
-                    updateFlashcard();
-                }
-            });
+        function setNext(e) {
+            e.preventDefault();
+            if (createinc < flashcards.length - 1) {
+                createinc++;
+                updateFlashcard();
+            }
+        }
 
-            document.getElementById("set-remove").addEventListener("click", function () {
-                if (flashcards.length > 0) {
-                    flashcards.splice(createinc, 1);
-                    createinc = Math.max(0, createinc - 1);
-                    updateFlashcard();
-                }
-            });
+        function setRemove() {
+            if (flashcards.length > 0) {
+                flashcards.splice(createinc, 1);
+                createinc = Math.max(0, createinc - 1);
+                updateFlashcard();
+            }
+        }
 
-            document.getElementById("set-save").addEventListener("click", function () {
-                let setname = document.getElementById("setname").value;
-                if (flashcards.length > 0) {
-                    localStorage.setItem(setname, JSON.stringify(flashcards));
-                    alert("Flashcard set saved!");
-                    $('#page-content-wrapper').load('flashcardhome.html');
-                }
-            });
-        })();
+        function setSave() {
+            let setname = document.getElementById("setname").value;
+            if (flashcards.length > 0) {
+                localStorage.setItem(setname, JSON.stringify(flashcards));
+                alert("Flashcard set saved!");
+                $('#page-content-wrapper').load('flashcardhome.html', function () {
+                    initializeFlashcards(); // Reinitialize for new set
+                });
+            }
+        }
     </script>
 </body>

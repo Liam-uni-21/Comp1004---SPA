@@ -2,27 +2,26 @@
     <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-    <div class="jumbotron bg-cover" id="dashboard-screen" style="height: 80vh;">
+    <div class="jumbotron bg-cover" id="dashboard-screen" style="height: 80vh; background: linear-gradient(135deg, #f5a623, #f29d77);">
         <h1 style="text-align: center">Study review</h1>
 
-        <!-- Quiz Buttons Section -->
         <div id="quiz-list" style="text-align: center;">
             <h2>Completed</h2>
-            <div id="quiz-buttons"></div>
+            <div id="study-buttons"></div>
         </div>
 
-        <!-- Review Section (Displays Incorrect Answers) -->
-        <div id="review-section" style="display: none; margin-top: 20px; overflow-y: auto; max-height: 50vh; border: 1px solid black; padding: 10px;">
-            <h2>Areas for Improvement</h2>
-            <div id="incorrect-answers"></div>
+        <div id="review-section" style="display: none; margin-top: 20px; overflow-y: auto; max-height: 50vh; border: 1px solid black; padding: 10px; background: white; width: 80vh; margin-inline: auto">
+            <h2 id="review-title">Study Review</h2>
+            <div id="review-content"></div>
         </div>
     </div>
     <script>
-        function loadCompletedQuizzes() {
-            let quizButtonsDiv = document.getElementById("quiz-buttons");
-            quizButtonsDiv.innerHTML = "";
+        function loadCompletedTasks() {
+            let taskButtonsDiv = document.getElementById("study-buttons");
+            taskButtonsDiv.innerHTML = "";
 
-            let foundQuizzes = false; // Track if any quizzes were found
+            let foundQuizzes = false;
+            let foundFlashcards = false;
 
             Object.keys(localStorage).forEach((key) => {
                 if (key.startsWith("quizProgress_")) {
@@ -33,36 +32,91 @@
                         let quizName = key.replace("quizProgress_", "");
 
                         let button = document.createElement("button");
-                        button.textContent = quizName;
+                        button.textContent = "Quiz: " + quizName;
+                        button.className = "review-button quiz-button";
                         button.style.margin = "5px";
                         button.onclick = function () {
-                            loadIncorrectAnswers(quizName);
+                            loadQuizReview(quizName);
                         };
+                        taskButtonsDiv.appendChild(button);
+                    }
+                } else if (key.startsWith("flashProgress_")) {
+                    let flashData = JSON.parse(localStorage.getItem(key));
 
-                        quizButtonsDiv.appendChild(button);
+                    if (flashData && flashData.completed) {
+                        foundFlashcards = true;
+                        let flashName = key.replace("flashProgress_", "");
+
+                        let button = document.createElement("button");
+                        button.textContent = "Flashcards: " + flashName;
+                        button.className = "review-button flashcard-button";
+                        button.style.margin = "5px";
+                        button.onclick = function () {
+                            loadFlashcardReview(flashName, true);
+                        };
+                        taskButtonsDiv.appendChild(button);
                     }
                 }
             });
+
+            // Handle custom flashcard sets
+            Object.keys(localStorage).forEach((key) => {
+                // Skip non-flashcard items, progress tracking, and completion markers
+                if (key === "selectedFlash" || key.startsWith("quizProgress_") ||
+                    key.startsWith("flashProgress_")) return;
+
+                // Check if this is a completed custom flashcard set
+                if (localStorage.getItem(`${key}_completed`) === "true") {
+                    try {
+                        const data = JSON.parse(localStorage.getItem(key));
+                        if (Array.isArray(data) && data.length > 0) {
+                            foundFlashcards = true;
+
+                            let button = document.createElement("button");
+                            button.textContent = "Custom: " + key;
+                            button.className = "review-button custom-flashcard-button";
+                            button.style.margin = "5px";
+                            button.onclick = function () {
+                                loadFlashcardReview(key, false);
+                            };
+                            taskButtonsDiv.appendChild(button);
+                        }
+                    } catch (e) {
+                        console.log("Skipping non-flashcard key:", key);
+                    }
+                }
+            });
+
+            if (!foundQuizzes && !foundFlashcards) {
+                taskButtonsDiv.innerHTML = "<p>No completed activities found.</p>";
+            }
         }
-        function loadIncorrectAnswers(quizName) {
+
+        function loadQuizReview(quizName) {
             let progressKey = `quizProgress_${quizName}`;
             let quizData = JSON.parse(localStorage.getItem(progressKey));
 
             let reviewSection = document.getElementById("review-section");
-            let incorrectAnswersDiv = document.getElementById("incorrect-answers");
+            let reviewContent = document.getElementById("review-content");
+            let reviewTitle = document.getElementById("review-title");
 
-            incorrectAnswersDiv.innerHTML = ""; // Clear previous results
+            reviewTitle.textContent = "Quiz Review: " + quizName;
+            reviewContent.innerHTML = ""; // Clear previous results
 
             let questionSet = quizName + "Questions";
             let answerSet = quizName + "Answers";
 
             if (!quizData[questionSet] || !quizData[answerSet]) {
-                incorrectAnswersDiv.innerHTML = "<p>Quiz data not found.</p>";
+                reviewContent.innerHTML = "<p>Quiz data not found.</p>";
+                reviewSection.style.display = "block";
                 return;
             }
 
+            let foundIncorrect = false;
+
             for (let i = 0; i < quizData[questionSet].length; i++) {
                 if (quizData.Answered[i] && !quizData[quizName + quizData.AnsweredA[i]][i]) {
+                    foundIncorrect = true;
                     let questionDiv = document.createElement("div");
                     questionDiv.style.marginBottom = "10px";
 
@@ -73,14 +127,172 @@
                             <hr>
                         `;
 
-                    incorrectAnswersDiv.appendChild(questionDiv);
+                    reviewContent.appendChild(questionDiv);
                 }
             }
+
+            if (!foundIncorrect) {
+                reviewContent.innerHTML = "<p>Great job! All answers were correct.</p>";
+            }
+
+            // Add button to retry this quiz
+            let retryButton = document.createElement("button");
+            retryButton.textContent = "Retry Quiz";
+            retryButton.className = "retry-button";
+            retryButton.onclick = function () {
+                localStorage.setItem("selectedQuiz", quizName);
+                localStorage.removeItem(`quizProgress_${quizName}`);
+                $('#page-content-wrapper').load('quiz.html');
+            };
+            reviewContent.appendChild(retryButton);
+
+            reviewSection.style.display = "block"; // Show the review section
+        }
+
+        function loadFlashcardReview(setName, isBuiltIn) {
+            let reviewSection = document.getElementById("review-section");
+            let reviewContent = document.getElementById("review-content");
+            let reviewTitle = document.getElementById("review-title");
+
+            reviewTitle.textContent = "Flashcard Review: " + setName;
+            reviewContent.innerHTML = ""; // Clear previous results
+
+            let flashcardData;
+
+            if (isBuiltIn) {
+                // Handle built-in flashcard sets
+                let progressKey = `flashProgress_${setName}`;
+                flashcardData = JSON.parse(localStorage.getItem(progressKey));
+
+                const questionsKey = setName + "Questions";
+                const answersKey = setName + "Answers";
+                const knowKey = setName + "Know";
+
+                if (flashcardData && flashcardData[questionsKey] && flashcardData[answersKey]) {
+                    // Display statistics
+                    let totalCards = flashcardData[questionsKey].length;
+                    let knownCards = 0;
+
+                    if (flashcardData[knowKey]) {
+                        for (let i = 0; i < flashcardData[knowKey].length; i++) {
+                            if (flashcardData[knowKey][i] === true) {
+                                knownCards++;
+                            }
+                        }
+                    }
+
+                    let statsDiv = document.createElement("div");
+                    statsDiv.innerHTML = `
+                            <h3>Statistics</h3>
+                            <p>Total Cards: ${totalCards}</p>
+                            <p>Known Cards: ${knownCards}</p>
+                            <p>Cards to Review: ${totalCards - knownCards}</p>
+                            <hr>
+                        `;
+                    reviewContent.appendChild(statsDiv);
+
+                    // List cards that need review (marked as "Don't Know")
+                    let reviewCardsDiv = document.createElement("div");
+                    reviewCardsDiv.innerHTML = "<h3>Cards to Review</h3>";
+
+                    let hasCardsToReview = false;
+
+                    for (let i = 0; i < flashcardData[questionsKey].length; i++) {
+                        if (flashcardData[knowKey][i] === false) {
+                            hasCardsToReview = true;
+                            let cardDiv = document.createElement("div");
+                            cardDiv.className = "review-card";
+                            cardDiv.innerHTML = `
+                                    <p><strong>Question:</strong> ${flashcardData[questionsKey][i]}</p>
+                                    <p><strong>Answer:</strong> ${flashcardData[answersKey][i]}</p>
+                                    <hr>
+                                `;
+                            reviewCardsDiv.appendChild(cardDiv);
+                        }
+                    }
+
+                    if (!hasCardsToReview) {
+                        reviewCardsDiv.innerHTML += "<p>Great job! You knew all the cards.</p>";
+                    }
+
+                    reviewContent.appendChild(reviewCardsDiv);
+                } else {
+                    reviewContent.innerHTML = "<p>Flashcard data not found.</p>";
+                }
+            } else {
+                // Handle custom flashcard sets
+                try {
+                    flashcardData = JSON.parse(localStorage.getItem(setName));
+
+                    if (Array.isArray(flashcardData) && flashcardData.length > 0) {
+                        // Display statistics
+                        let totalCards = flashcardData.length;
+                        let knownCards = 0;
+
+                        for (let i = 0; i < flashcardData.length; i++) {
+                            if (flashcardData[i].Know === true) {
+                                knownCards++;
+                            }
+                        }
+
+                        let statsDiv = document.createElement("div");
+                        statsDiv.innerHTML = `
+                                <h3>Statistics</h3>
+                                <p>Total Cards: ${totalCards}</p>
+                                <p>Known Cards: ${knownCards}</p>
+                                <p>Cards to Review: ${totalCards - knownCards}</p>
+                                <hr>
+                            `;
+                        reviewContent.appendChild(statsDiv);
+
+                        // List cards that need review (marked as "Don't Know")
+                        let reviewCardsDiv = document.createElement("div");
+                        reviewCardsDiv.innerHTML = "<h3>Cards to Review</h3>";
+
+                        let hasCardsToReview = false;
+
+                        for (let i = 0; i < flashcardData.length; i++) {
+                            if (flashcardData[i].Know === false) {
+                                hasCardsToReview = true;
+                                let cardDiv = document.createElement("div");
+                                cardDiv.className = "review-card";
+                                cardDiv.innerHTML = `
+                                        <p><strong>Question:</strong> ${flashcardData[i].question}</p>
+                                        <p><strong>Answer:</strong> ${flashcardData[i].answer}</p>
+                                        <hr>
+                                    `;
+                                reviewCardsDiv.appendChild(cardDiv);
+                            }
+                        }
+
+                        if (!hasCardsToReview) {
+                            reviewCardsDiv.innerHTML += "<p>Great job! You knew all the cards.</p>";
+                        }
+
+                        reviewContent.appendChild(reviewCardsDiv);
+                    } else {
+                        reviewContent.innerHTML = "<p>Custom flashcard data not found or is empty.</p>";
+                    }
+                } catch (e) {
+                    console.error("Error loading custom flashcard data:", e);
+                }
+            }
+
+            // Add button to retry this flashcard set
+            let retryButton = document.createElement("button");
+            retryButton.textContent = "Review Flashcards";
+            retryButton.className = "retry-button";
+            retryButton.onclick = function () {
+                localStorage.setItem("selectedFlash", setName);
+                $('#page-content-wrapper').load('flashcards.html');
+            };
+            reviewContent.appendChild(retryButton);
+
             reviewSection.style.display = "block"; // Show the review section
         }
 
         $(document).ready(function () {
-            loadCompletedQuizzes();
+            loadCompletedTasks();
         });
     </script>
 </body>

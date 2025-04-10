@@ -1,9 +1,9 @@
 ﻿<body>
-    <div class="jumbotron bg-cover" style="height: 80vh;">
+    <div class="jumbotron bg-cover" style="height: 80vh; background: linear-gradient(135deg, #f5a623, #f29d77);">
         <div class="container">
             <h1 class="display-4" style="text-align: center">Flashcard Selector</h1>
         </div>
-        <div>
+        <div style="margin-inline: auto; max-width: fit-content">
             <span class="flash-block" style="padding: 10px;">
                 <label for="option-F1" style="padding: 5px; font-size: 2.5rem;">
                     <input type="button"
@@ -19,7 +19,7 @@
                     <input type="button"
                            id="option-F2"
                            value="Flashcards2"
-                           class="flashcard-selection"  
+                           class="flashcard-selection"
                            onclick="Flashselection('F2')" />
                 </label>
             </span>
@@ -34,15 +34,27 @@
                 </label>
             </span>
         </div>
-        <label>
-            <input type="button"
-                   id="create-flashcard"
-                   value="Create new Flashcard set"
-                   class="flashcard-selection" />
-        </label>
-        <div id="customcards">
-
+        <div style="margin-inline: auto; max-width: fit-content">
+            <label>
+                <input type="button"
+                       id="create-flashcard"
+                       value="Create new Flashcard set"
+                       class="flashcard-selection" />
+            </label>
+            <label>
+                <input type="text"
+                       id="setnameDelete"
+                       placeholder="Enter set name to delete" />
+                <input type="button"
+                       id="delete-set"
+                       value="Delete set"
+                       onclick="deleteSet()" />
+            </label>
+            <hr />
         </div>
+            <div id="customcards">
+
+            </div>
     </div>
     <script>
         function Flashselection(flashKey) {
@@ -60,12 +72,12 @@
 
         function populateCustomSets() {
             const customCardsDiv = document.getElementById("customcards");
-            customCardsDiv.innerHTML = "";
+            customCardsDiv.innerHTML = "";  
 
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
 
-                if (key === "selectedFlash") continue;
+                if (key === "selectedFlash" || key.endsWith("_completed")) continue;
 
                 try {
                     const data = JSON.parse(localStorage.getItem(key));
@@ -94,6 +106,22 @@
                 } catch (e) {
                     console.log("Skipping non-flashcard key:", key);
                 }
+            }
+        }
+
+        function deleteSet() {
+            let deletename = document.getElementById("setnameDelete").value.trim();
+
+            if (!deletename) {
+                alert("Please enter a set name to delete.");
+                return;
+            }
+
+            if (localStorage.getItem(deletename) !== null) {
+                localStorage.removeItem(deletename);
+                localStorage.removeItem(`${deletename}_completed`);
+                populateCustomSets();
+                document.getElementById("setnameDelete").value = "";
             }
         }
         document.addEventListener("DOMContentLoaded", populateCustomSets);

@@ -14,7 +14,7 @@
 
     <nav class="navbar navbar-dark bg-dark">
         <div class="container-fluid d-flex justify-content-start">
-            <a class="navbar-brand" href="#">COMP1004</a>
+            <a class="navbar-brand" href="#">Studying app</a>
             <ul class="navbar-nav mb-0">
                 <li class="nav-item">
                     <a class="nav-link active" href="#" id="home">Home</a>
@@ -36,19 +36,26 @@
 
             <!-- Main Content -->
             <div id="page-content-wrapper" class="col-8 p-4">
-                <div class="jumbotron bg-cover" style="background-image: linear-gradient(to bottom,
-rgba(255,255,255,0.6) 0%,rgba(255,255,255,0.9) 100%), url(img/SUShop.jpg); height: 80vh;">
+                <div class="jumbotron bg-cover" style="background: linear-gradient(135deg, #f5a623, #f29d77); height: 80vh;">
                     <div class="container">
                         <h1 class="display-4">Welcome</h1>
                         <p class="lead font-weight-bold">
-                            Welcome to the COMP1004 sample Single Page Application. In this example,
-                            we shall load a map, a treasure game, and a data chart into this space to illustrate how JQuery
-                            will allow you to provide a rich user experience on one HTML page.
+                            
                         </p>
                     </div>
                 </div>
             </div>
-            <div class="col-2 bg-dark vh-90"></div>
+            <div class="col-2 bg-dark vh-90 d-flex flex-column justify-content-center align-items-center text-white">
+                <h6>Study Timer</h6>
+                <div class="progress w-100" style="height: 30px;">
+                    <div id="studyProgressBar" class="progress-bar bg-success" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        0%
+                    </div>
+                </div>
+                <h6 id="studyText" style="padding-top: 5px; display:flex;">Every 30 minutes <br />you should take a break <br />to prevent burnout</h6>
+                <h6 id="timerText" style="padding-top: 5px; display:none;">Well done <br /> you can take a break now</h6>
+                <button id="timerButton" style="display:none" onclick="resetTimer()">Reset timer</button>
+            </div>
         </div>
     </div>
 
@@ -65,11 +72,54 @@ rgba(255,255,255,0.6) 0%,rgba(255,255,255,0.9) 100%), url(img/SUShop.jpg); heigh
     <footer class="footer">
         <div class="container">
             <span class="text-muted">
-                Copyright University of Plymouth - for teaching purposes
-                only
+                
             </span>
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        let duration = 1800;
+        let elapsed = 0;
+        let timer; // Make this accessible globally
+
+        $(document).ready(function () {
+            startTimer();
+        });
+
+        function startTimer() {
+            elapsed = 0;
+            timer = setInterval(function () {
+                if (elapsed <= duration) {
+                    let percent = (elapsed / duration) * 100;
+                    $('#studyProgressBar')
+                        .css('width', percent + '%')
+                        .attr('aria-valuenow', percent)
+                        .text(Math.floor(percent) + '%');
+                    elapsed++;
+                } else if (elapsed === duration + 1) {
+                    clearInterval(timer);
+                    document.getElementById("studyText").style.display = "none";
+                    document.getElementById("timerText").style.display = "flex";
+                    document.getElementById("timerButton").style.display = "flex";
+                }
+            }, 1000);
+        }
+        function resetTimer() {
+            clearInterval(timer);
+            elapsed = 0;
+            $('#studyProgressBar')
+                .css('width', '0%')
+                .attr('aria-valuenow', 0)
+                .text('0%');
+            document.getElementById("studyText").style.display = "flex";
+            document.getElementById("timerText").style.display = "none";
+            document.getElementById("timerButton").style.display = "none";
+            startTimer();
+        }
+
+        $(document).ready(function () {
+            $('#page-content-wrapper').load('home.html');
+        });
+    </script>
 </body>
 </html>

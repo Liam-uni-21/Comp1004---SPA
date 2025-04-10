@@ -23,7 +23,7 @@
 
         if (selectedFlash && selectedFlash !== "F1" && selectedFlash !== "F2" && selectedFlash !== "F3") {
             try {
-                const customData = localStorage.getItem(selectedFlash);
+                let customData = localStorage.getItem(selectedFlash);
                 if (customData) {
                     flashdata = JSON.parse(customData);
                     updateFlashcard();
@@ -31,14 +31,21 @@
                     document.getElementById("question").textContent = "No flashcards found.";
                 }
             } catch (e) {
-                console.error("Error loading custom flashcards:", e);
                 document.getElementById("question").textContent = "Error loading flashcards.";
             }
         } else {
             fetch("js/flashcards.json")
                 .then(response => response.json())
                 .then(data => {
-                    flashdata = data;
+                    let selectedFlash = localStorage.getItem("selectedFlash");
+                    let progressKey = `flashProgress_${selectedFlash}`;
+
+                    let savedProgress = localStorage.getItem(progressKey);
+                    if (savedProgress) {
+                        flashdata = JSON.parse(savedProgress);
+                    } else {
+                        flashdata = data;
+                    }
                     updateFlashcard();
                 })
                 .catch(error => {
@@ -52,22 +59,14 @@
                 const questionsKey = selectedFlash + "Questions";
                 const answersKey = selectedFlash + "Answers";
 
-                if (flashdata && flashdata[questionsKey] && flashdata[answersKey] &&
-                    flashinc < flashdata[questionsKey].length) {
+                if (flashdata && flashdata[questionsKey] && flashdata[answersKey] && flashinc < flashdata[questionsKey].length) {
                     document.getElementById("question").textContent = flashdata[questionsKey][flashinc];
                     document.getElementById("answer").textContent = flashdata[answersKey][flashinc];
-                } else {
-                    // Fallback
-                    document.getElementById("question").textContent = "No questions available for " + selectedFlash;
-                    document.getElementById("answer").textContent = "";
                 }
             } else {
                 if (Array.isArray(flashdata) && flashdata.length > 0 && flashinc < flashdata.length) {
                     document.getElementById("question").textContent = flashdata[flashinc].question;
                     document.getElementById("answer").textContent = flashdata[flashinc].answer;
-                } else {
-                    document.getElementById("question").textContent = "No flashcards available";
-                    document.getElementById("answer").textContent = "";
                 }
             }
         }
@@ -76,28 +75,84 @@
             document.getElementById("flashcard").classList.toggle("flipped");
         }
 
-        function nextFlashcard() {
+        function Know() {
             document.getElementById("flashcard").classList.remove("flipped");
+            let progressKey = `flashProgress_${selectedFlash}`;
 
             if (selectedFlash === "F1" || selectedFlash === "F2" || selectedFlash === "F3") {
                 const questionsKey = selectedFlash + "Questions";
-                if (flashdata[questionsKey] && flashinc < flashdata[questionsKey].length - 1) {
+                const answeredKey = selectedFlash + "Answered";
+                const knowKey = selectedFlash + "Know";
+
+                if (flashdata[questionsKey] && flashinc <= flashdata[questionsKey].length - 1) {
+                    flashdata[answeredKey][flashinc] = true;
+                    flashdata[knowKey][flashinc] = true;
+
+                    localStorage.setItem(progressKey, JSON.stringify(flashdata));
                     flashinc++;
-                } else {
-                    flashinc = 0;
+                    console.log(flashinc);
                 }
+
+                if (flashinc === flashdata[questionsKey].length) {
+                    flashdata.completed = true;
+                    localStorage.setItem(progressKey, JSON.stringify(flashdata));
+                    $('#page-content-wrapper').load('flashcardhome.html');
+                }  
             } else {
-                if (Array.isArray(flashdata) && flashinc < flashdata.length - 1) {
+                if (Array.isArray(flashdata) && flashinc <= flashdata.length - 1) {
+                    flashdata[flashinc].answered = true;
+                    flashdata[flashinc].Know = true;
+
+                    localStorage.setItem(selectedFlash, JSON.stringify(flashdata));
                     flashinc++;
-                } else {
-                    flashinc = 0;
+                }
+                if (flashinc === flashdata.length) {
+                    localStorage.setItem(`${selectedFlash}_completed`, "true");
+                    $('#page-content-wrapper').load('flashcardhome.html');  
                 }
             }
 
             updateFlashcard();
         }
+
+        function DontKnow() {
+            document.getElementById("flashcard").classList.remove("flipped");
+            let progressKey = `flashProgress_${selectedFlash}`;
+
+            if (selectedFlash === "F1" || selectedFlash === "F2" || selectedFlash === "F3") {
+                const questionsKey = selectedFlash + "Questions";
+                const answeredKey = selectedFlash + "Answered";
+                const knowKey = selectedFlash + "Know";
+
+                if (flashdata[questionsKey] && flashinc <= flashdata[questionsKey].length) {
+                    flashdata[answeredKey][flashinc] = true;
+                    flashdata[knowKey][flashinc] = false;
+
+                    localStorage.setItem(progressKey, JSON.stringify(flashdata));
+                    flashinc++;
+                }
+                if (flashinc === flashdata.length) {
+                    flashdata.completed = true;
+                    localStorage.setItem(progressKey, JSON.stringify(flashdata));
+                }
+            } else {
+                if (Array.isArray(flashdata) && flashinc <= flashdata.length - 1) {
+                    flashdata[flashinc].answered = true;
+                    flashdata[flashinc].Know = false;
+
+                    localStorage.setItem(selectedFlash, JSON.stringify(flashdata));
+                    flashinc++;
+                }
+                if (flashinc === flashdata.length) {
+                    localStorage.setItem(`${selectedFlash}_completed`, "true");
+                    $('#page-content-wrapper').load('flashcardhome.html');  
+                }
+            }
+            updateFlashcard();
+        }
+
         document.getElementById("flashcard").addEventListener("click", flipflash);
-        document.getElementById("dontknow").addEventListener("click", nextFlashcard);
-        document.getElementById("know").addEventListener("click", nextFlashcard);
+        document.getElementById("dontknow").addEventListener("click", DontKnow);
+        document.getElementById("know").addEventListener("click", Know);
     </script>
 </body>
