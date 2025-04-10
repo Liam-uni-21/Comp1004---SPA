@@ -61,11 +61,9 @@
 
             // Handle custom flashcard sets
             Object.keys(localStorage).forEach((key) => {
-                // Skip non-flashcard items, progress tracking, and completion markers
                 if (key === "selectedFlash" || key.startsWith("quizProgress_") ||
                     key.startsWith("flashProgress_")) return;
 
-                // Check if this is a completed custom flashcard set
                 if (localStorage.getItem(`${key}_completed`) === "true") {
                     try {
                         const data = JSON.parse(localStorage.getItem(key));
@@ -101,7 +99,7 @@
             let reviewTitle = document.getElementById("review-title");
 
             reviewTitle.textContent = "Quiz Review: " + quizName;
-            reviewContent.innerHTML = ""; // Clear previous results
+            reviewContent.innerHTML = "";
 
             let questionSet = quizName + "Questions";
             let answerSet = quizName + "Answers";
@@ -135,7 +133,6 @@
                 reviewContent.innerHTML = "<p>Great job! All answers were correct.</p>";
             }
 
-            // Add button to retry this quiz
             let retryButton = document.createElement("button");
             retryButton.textContent = "Retry Quiz";
             retryButton.className = "retry-button";
@@ -146,7 +143,7 @@
             };
             reviewContent.appendChild(retryButton);
 
-            reviewSection.style.display = "block"; // Show the review section
+            reviewSection.style.display = "block";
         }
 
         function loadFlashcardReview(setName, isBuiltIn) {
@@ -155,7 +152,7 @@
             let reviewTitle = document.getElementById("review-title");
 
             reviewTitle.textContent = "Flashcard Review: " + setName;
-            reviewContent.innerHTML = ""; // Clear previous results
+            reviewContent.innerHTML = "";
 
             let flashcardData;
 
@@ -169,7 +166,6 @@
                 const knowKey = setName + "Know";
 
                 if (flashcardData && flashcardData[questionsKey] && flashcardData[answersKey]) {
-                    // Display statistics
                     let totalCards = flashcardData[questionsKey].length;
                     let knownCards = 0;
 
@@ -191,7 +187,6 @@
                         `;
                     reviewContent.appendChild(statsDiv);
 
-                    // List cards that need review (marked as "Don't Know")
                     let reviewCardsDiv = document.createElement("div");
                     reviewCardsDiv.innerHTML = "<h3>Cards to Review</h3>";
 
@@ -225,7 +220,6 @@
                     flashcardData = JSON.parse(localStorage.getItem(setName));
 
                     if (Array.isArray(flashcardData) && flashcardData.length > 0) {
-                        // Display statistics
                         let totalCards = flashcardData.length;
                         let knownCards = 0;
 
@@ -245,7 +239,6 @@
                             `;
                         reviewContent.appendChild(statsDiv);
 
-                        // List cards that need review (marked as "Don't Know")
                         let reviewCardsDiv = document.createElement("div");
                         reviewCardsDiv.innerHTML = "<h3>Cards to Review</h3>";
 
@@ -277,8 +270,6 @@
                     console.error("Error loading custom flashcard data:", e);
                 }
             }
-
-            // Add button to retry this flashcard set
             let retryButton = document.createElement("button");
             retryButton.textContent = "Review Flashcards";
             retryButton.className = "retry-button";
@@ -288,7 +279,7 @@
             };
             reviewContent.appendChild(retryButton);
 
-            reviewSection.style.display = "block"; // Show the review section
+            reviewSection.style.display = "block"; 
         }
 
         $(document).ready(function () {

@@ -34,35 +34,27 @@
     </div>
 
     <script>
-        // Declare globally so all functions can access
         var flashcards = [];
         var createinc = 0;
         var questionInput, answerInput, counter;
 
         function initializeFlashcards() {
-            // Initialize DOM elements
             questionInput = document.getElementById("set-question");
             answerInput = document.getElementById("set-answer");
             counter = document.getElementById("counter");
 
-            // Clear input fields
             questionInput.value = "";
             answerInput.value = "";
 
-            // Reset flashcards array
             flashcards = [];
             createinc = 0;
 
-            // Reset counter text
             updateCounter();
         }
 
-        // Call when the page is ready or whenever needed
         $(document).ready(function () {
-            // Ensure proper initialization of the inputs and counter
             initializeFlashcards();
 
-            // Set up event listeners
             document.getElementById("set-new").addEventListener("click", setNew);
             document.getElementById("set-previous").addEventListener("click", setPrev);
             document.getElementById("set-next").addEventListener("click", setNext);
@@ -123,7 +115,7 @@
                 localStorage.setItem(setname, JSON.stringify(flashcards));
                 alert("Flashcard set saved!");
                 $('#page-content-wrapper').load('flashcardhome.html', function () {
-                    initializeFlashcards(); // Reinitialize for new set
+                    initializeFlashcards();
                 });
             }
         }
